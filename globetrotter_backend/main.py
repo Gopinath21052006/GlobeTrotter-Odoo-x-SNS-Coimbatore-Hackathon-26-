@@ -362,23 +362,25 @@ def admin_stats(db: Session = Depends(get_db)):
 
 @app.get("/admin/popular-cities")
 def popular_cities(db: Session = Depends(get_db)):
-    result = db.execute("""
+    rows = db.execute("""
       SELECT city, COUNT(*) as count
       FROM stops
       GROUP BY city
       ORDER BY count DESC
       LIMIT 5
-    """)
-    return result.fetchall()
+    """).fetchall()
+
+    return [{"city": r[0], "count": r[1]} for r in rows]
 
 
 @app.get("/admin/popular-activities")
 def popular_activities(db: Session = Depends(get_db)):
-    result = db.execute("""
+    rows = db.execute("""
       SELECT name, COUNT(*) as count
       FROM activities
       GROUP BY name
       ORDER BY count DESC
       LIMIT 5
-    """)
-    return result.fetchall()
+    """).fetchall()
+
+    return [{"name": r[0], "count": r[1]} for r in rows]

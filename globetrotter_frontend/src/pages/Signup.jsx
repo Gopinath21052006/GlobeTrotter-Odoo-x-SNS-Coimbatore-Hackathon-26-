@@ -16,17 +16,31 @@ export default function Signup() {
     bio: ""
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const handle = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const register = async () => {
+    setError("");
+    setLoading(true);
+
+    if (!form.first_name || !form.email || !form.password) {
+      setError("Please fill all required fields.");
+      setLoading(false);
+      return;
+    }
+
     try {
       await api.post("/signup", null, { params: form });
-      alert("Account created");
+      alert("Account created successfully!");
       navigate("/login");
     } catch {
-      alert("Email already exists");
+      setError("This email is already registered.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,22 +50,58 @@ export default function Signup() {
 
         <div className="avatar">📸</div>
         <h2 className="page-title" style={{ textAlign: "center" }}>
-          Create Account
+          Create your GlobeTrotter account
         </h2>
 
+        {error && (
+          <div style={{ color: "red", fontSize: "14px", marginBottom: "10px" }}>
+            {error}
+          </div>
+        )}
+
         <div className="signup-grid">
-          <input className="input-box" name="first_name" placeholder="First Name" onChange={handle} />
-          <input className="input-box" name="last_name" placeholder="Last Name" onChange={handle} />
+          <input
+            className="input-box"
+            name="first_name"
+            placeholder="First Name"
+            onChange={handle}
+          />
+          <input
+            className="input-box"
+            name="last_name"
+            placeholder="Last Name"
+            onChange={handle}
+          />
         </div>
 
         <div className="signup-grid">
-          <input className="input-box" name="email" placeholder="Email" onChange={handle} />
-          <input className="input-box" name="phone" placeholder="Phone" onChange={handle} />
+          <input
+            className="input-box"
+            name="email"
+            placeholder="Email"
+            onChange={handle}
+          />
+          <input
+            className="input-box"
+            name="phone"
+            placeholder="Phone"
+            onChange={handle}
+          />
         </div>
 
         <div className="signup-grid">
-          <input className="input-box" name="city" placeholder="City" onChange={handle} />
-          <input className="input-box" name="country" placeholder="Country" onChange={handle} />
+          <input
+            className="input-box"
+            name="city"
+            placeholder="City"
+            onChange={handle}
+          />
+          <input
+            className="input-box"
+            name="country"
+            placeholder="Country"
+            onChange={handle}
+          />
         </div>
 
         <input
@@ -65,18 +115,20 @@ export default function Signup() {
         <textarea
           className="input-box"
           name="bio"
-          placeholder="Additional Information..."
+          placeholder="Tell us about yourself (optional)"
           onChange={handle}
           style={{ height: "90px" }}
         />
 
-        <button className="btn-primary" onClick={register}>
-          Register
+        <button className="btn-primary" onClick={register} disabled={loading}>
+          {loading ? "Creating account..." : "Register"}
         </button>
 
         <div className="login-footer">
           Already have an account?{" "}
-          <Link className="link" to="/login">Login</Link>
+          <Link className="link" to="/login">
+            Login
+          </Link>
         </div>
 
       </div>

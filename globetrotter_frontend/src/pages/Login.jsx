@@ -5,18 +5,38 @@ import { api } from "../api";
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const res = await api.post("/login", null, {
         params: { email, password }
       });
+
       setUser(res.data);
+
+      if (remember) {
+        localStorage.setItem("user", JSON.stringify(res.data));
+      }
+
       navigate("/dashboard");
     } catch {
-      alert("Invalid email or password");
+      setError("Invalid email or password. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,22 +46,31 @@ const Login = ({ setUser }) => {
 
         {/* LEFT */}
         <div className="login-left">
-          <img src="https://cdn-icons-png.flaticon.com/512/201/201623.png" alt="travel" />
-          <h2 className="page-title">Travel The World With Us</h2>
-          <p>Plan trips, explore cities, manage budgets and create memories with GlobeTrotter.</p>
-          <button className="btn-primary" style={{ width: "200px", marginTop: "20px" }}>
-            Let’s Go!
-          </button>
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/201/201623.png"
+            alt="travel"
+          />
+          <h2 className="page-title">Travel smarter with GlobeTrotter</h2>
+          <p>
+            Discover cities, plan trips, track budgets and share memories.
+          </p>
         </div>
 
         {/* RIGHT */}
         <div className="login-right">
-          <h2>Login To Your Account</h2>
+          <h2>Welcome back 👋</h2>
+
+          {error && (
+            <div style={{ color: "red", fontSize: "14px", marginBottom: "10px" }}>
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleLogin}>
             <input
               className="input-box"
-              placeholder="Email"
+              type="email"
+              placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -56,16 +85,31 @@ const Login = ({ setUser }) => {
               required
             />
 
-            <div style={{ textAlign: "right", marginBottom: "10px" }}>
-              <Link className="link" to="/forgot">Forgot Password?</Link>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
+              <label style={{ fontSize: "14px" }}>
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                />{" "}
+                Remember me
+              </label>
+
+              <Link className="link" to="/forgot">
+                Forgot password?
+              </Link>
             </div>
 
-            <button className="btn-primary">Login</button>
+            <button className="btn-primary" disabled={loading}>
+              {loading ? "Signing in..." : "Login"}
+            </button>
           </form>
 
           <div className="login-footer">
-            Don’t have an account?{" "}
-            <Link className="link" to="/signup">Sign Up</Link>
+            New to GlobeTrotter?{" "}
+            <Link className="link" to="/signup">
+              Create an account
+            </Link>
           </div>
         </div>
 

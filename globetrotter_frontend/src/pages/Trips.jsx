@@ -5,6 +5,7 @@ import Header from "../components/Header";
 
 export default function Trips({ user }) {
   const [data, setData] = useState({ ongoing: [], upcoming: [], completed: [] });
+  const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,15 +15,34 @@ export default function Trips({ user }) {
     }
 
     api.get(`/trip-list/${user.user_id}`).then(res => setData(res.data));
-  }, []);
+  }, [user]);
+
+  const filterTrips = (trips) =>
+    trips.filter(t =>
+      t.name.toLowerCase().includes(query.toLowerCase()) ||
+      t.city.toLowerCase().includes(query.toLowerCase())
+    );
 
   const Card = ({ trip }) => (
     <div className="trip-list-card">
       <h4>{trip.name}</h4>
       <p>{trip.city}</p>
       <p>{trip.start_date} → {trip.end_date}</p>
-      <button onClick={() => navigate(`/trip/${trip.id}`)}>View</button>
+      <button className="btn-dark" onClick={() => navigate(`/trip/${trip.id}`)}>
+        Open Trip
+      </button>
     </div>
+  );
+
+  const Section = ({ title, trips }) => (
+    <>
+      <h3>{title}</h3>
+      {trips.length === 0 ? (
+        <p style={{ color: "#777" }}>No trips here.</p>
+      ) : (
+        filterTrips(trips).map(t => <Card key={t.id} trip={t} />)
+      )}
+    </>
   );
 
   return (
@@ -32,20 +52,16 @@ export default function Trips({ user }) {
       <div className="page-container">
 
         <div className="search-bar">
-          <input placeholder="Search trips..." />
-          <button>Group</button>
-          <button>Filter</button>
-          <button>Sort</button>
+          <input
+            placeholder="Search trips by name or city..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
         </div>
 
-        <h3>Ongoing</h3>
-        {data.ongoing.map(t => <Card key={t.id} trip={t} />)}
-
-        <h3>Upcoming</h3>
-        {data.upcoming.map(t => <Card key={t.id} trip={t} />)}
-
-        <h3>Completed</h3>
-        {data.completed.map(t => <Card key={t.id} trip={t} />)}
+        <Section title="🟢 Ongoing Trips" trips={data.ongoing} />
+        <Section title="🟡 Upcoming Trips" trips={data.upcoming} />
+        <Section title="🔵 Completed Trips" trips={data.completed} />
 
       </div>
     </>

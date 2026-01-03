@@ -1,0 +1,120 @@
+.admin-page {
+  padding: 90px 30px 30px;
+  max-width: 1400px;
+  margin: auto;
+}
+
+/* Tabs */
+.admin-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.admin-tabs button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.admin-tabs button:hover {
+  background: white;
+  transform: translateY(-2px);
+}
+
+.admin-tabs button.active {
+  background: black;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Layout */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 340px;
+  gap: 20px;
+}
+
+/* Left */
+.admin-left {
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(14px);
+  border-radius: 22px;
+  padding: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.admin-item {
+  padding: 12px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  background: white;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.admin-item:hover {
+  transform: translateX(6px);
+}
+
+.admin-item span {
+  display: block;
+  font-size: 12px;
+  color: gray;
+}
+
+/* Center */
+.admin-center {
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(14px);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.chart {
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.chart.pie {
+  grid-column: span 2;
+}
+
+/* Right */
+.admin-right {
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(14px);
+  border-radius: 22px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.admin-right h3 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+.note {
+  font-size: 13px;
+  color: gray;
+  margin-top: 15px;
+}

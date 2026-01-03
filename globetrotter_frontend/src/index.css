@@ -10,16 +10,20 @@ body {
   background: linear-gradient(135deg, #dff3ff, #e6fff3, #ffe6f0);
 }
 
-/* Fixed Header */
+/* ============================= */
+/* 🌍 GlobeTrotter Top Header */
+/* ============================= */
+
 .app-header {
-  height: 60px;
-  background: white;
-  border-radius: 0 0 16px 16px;
-  padding: 0 25px;
+  height: 64px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(14px);
+  border-radius: 0 0 22px 22px;
+  padding: 0 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-md);
   position: fixed;
   top: 0;
   left: 0;
@@ -27,11 +31,30 @@ body {
   z-index: 1000;
 }
 
+/* Logo */
 .logo {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.4px;
 }
 
+/* Search button */
+.app-header button {
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: white;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.app-header button:hover {
+  transform: translateY(-2px);
+}
+
+/* Profile circle */
 .profile-circle {
   width: 42px;
   height: 42px;
@@ -42,7 +65,13 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  transition: 0.2s;
+}
+
+.profile-circle:hover {
+  transform: scale(1.1);
 }
 
 /* Space below header */
@@ -60,7 +89,11 @@ body {
 
 /* Glass card */
 .app-card {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   border-radius: 22px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.12);
   padding: 40px;
@@ -84,7 +117,6 @@ body {
 /* Buttons */
 .btn-primary,
 .btn-dark {
-  width: 100%;
   padding: 14px;
   border-radius: 999px;
   border: none;
@@ -136,7 +168,11 @@ body {
 .login-right {
   flex: 1;
   padding: 60px;
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
 }
 
 .login-right h2 {
@@ -162,7 +198,11 @@ body {
 }
 
 .banner {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -185,7 +225,11 @@ body {
 }
 
 .filter-btn {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   border-radius: 12px;
   border: none;
   padding: 12px 20px;
@@ -215,7 +259,11 @@ body {
 }
 
 .trip-card {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -247,7 +295,11 @@ body {
 }
 
 .trip-form {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   padding: 30px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -260,7 +312,11 @@ body {
 }
 
 .region-card {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -278,7 +334,11 @@ body {
   font-weight: 600;
 }
 .itinerary-section {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   padding: 25px;
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -302,7 +362,11 @@ body {
   display: flex;
   gap: 30px;
   margin-bottom: 30px;
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   padding: 30px;
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -325,7 +389,11 @@ body {
   color: #555;
 }
 .trip-list-card {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   padding: 20px;
   border-radius: 16px;
   margin-bottom: 15px;
@@ -341,7 +409,11 @@ body {
   margin-top: 10px;
 }
 .day-card {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   padding: 25px;
   border-radius: 18px;
   margin-bottom: 20px;
@@ -361,7 +433,11 @@ body {
   padding-top: 10px;
 }
 .post-card {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   padding: 20px;
   border-radius: 16px;
   margin-bottom: 15px;
@@ -380,7 +456,11 @@ body {
 }
 
 .calendar-cell {
-  background: white;
+  background: var(--surface-soft);
+backdrop-filter: blur(12px);
+box-shadow: var(--shadow-md);
+border-radius: var(--radius-lg);
+
   padding: 10px;
   height: 80px;
   border-radius: 12px;
@@ -398,3 +478,4 @@ body {
   font-size: 12px;
   margin-top: 6px;
 }
+

@@ -18,28 +18,39 @@ export default function Search() {
 
         <div className="search-bar">
           <input
-            placeholder="Search city or activity..."
+            placeholder="Search cities or activities (e.g. Paris, hiking)"
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
-          <button>Group</button>
-          <button>Filter</button>
-          <button>Sort</button>
         </div>
 
-        <div className="results">
-          {results.map(c => (
-            <div key={c.name} className="search-card">
-              <img src={`/cities/${c.image}`} />
-              <div>
-                <h3>{c.name}</h3>
-                <p>{c.country}</p>
-                <p>Activities: {c.activities.join(", ")}</p>
-                <button>Add to Trip</button>
+        <p style={{ marginBottom: "15px", color: "#666" }}>
+          {query
+            ? `Showing ${results.length} results for "${query}"`
+            : "Start typing to explore destinations and activities"}
+        </p>
+
+        {results.length === 0 ? (
+          <div className="empty-state">
+            😕 No places found. Try a different search.
+          </div>
+        ) : (
+          <div className="results-grid">
+            {results.map(c => (
+              <div key={c.name} className="search-card">
+                <img src={`/cities/${c.image}`} alt={c.name} />
+                <div className="search-content">
+                  <h3>{c.name}</h3>
+                  <p>{c.country}</p>
+                  <p className="activities">
+                    {c.activities.join(" • ")}
+                  </p>
+                  <button className="btn-dark">Add to Trip</button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
       </div>
     </>

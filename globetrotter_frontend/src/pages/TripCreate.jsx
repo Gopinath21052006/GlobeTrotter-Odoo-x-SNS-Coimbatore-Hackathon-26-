@@ -14,6 +14,9 @@ export default function TripCreate({ user }) {
     end_date: ""
   });
 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handle = (e) => {
     setTrip({ ...trip, [e.target.name]: e.target.value });
   };
@@ -27,7 +30,20 @@ export default function TripCreate({ user }) {
   };
 
   const createTrip = async () => {
+    setError("");
+
+    if (!trip.name || !trip.city || !trip.start_date || !trip.end_date) {
+      setError("Please fill all trip details.");
+      return;
+    }
+
+    if (trip.end_date < trip.start_date) {
+      setError("End date must be after start date.");
+      return;
+    }
+
     try {
+      setLoading(true);
       await api.post("/trips", null, {
         params: {
           user_id: user.user_id,
@@ -37,9 +53,12 @@ export default function TripCreate({ user }) {
           end_date: trip.end_date
         }
       });
+
       navigate("/dashboard");
     } catch {
-      alert("Failed to create trip");
+      setError("Failed to create trip. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,12 +70,22 @@ export default function TripCreate({ user }) {
 
         <h2 className="page-title">Plan a New Trip</h2>
 
+        <p style={{ color: "#666", marginBottom: "15px" }}>
+          Start by selecting where and when you want to travel.
+        </p>
+
+        {error && (
+          <div style={{ color: "red", marginBottom: "15px" }}>
+            {error}
+          </div>
+        )}
+
         <div className="trip-form">
 
           <input
             className="input-box"
             name="name"
-            placeholder="Trip Name"
+            placeholder="Trip Name (e.g. Paris Getaway)"
             value={trip.name}
             onChange={handle}
           />
@@ -64,7 +93,7 @@ export default function TripCreate({ user }) {
           <input
             className="input-box"
             name="city"
-            placeholder="Select a Place"
+            placeholder="City (or click one below)"
             value={trip.city}
             onChange={handle}
           />
@@ -84,13 +113,17 @@ export default function TripCreate({ user }) {
             />
           </div>
 
-          <button className="btn-primary" onClick={createTrip}>
-            Create Trip
+          <button
+            className="btn-primary"
+            onClick={createTrip}
+            disabled={loading}
+          >
+            {loading ? "Creating trip..." : "Create My Trip"}
           </button>
         </div>
 
         <h3 className="section-title">
-          Suggestions for Places to Visit
+          Popular Destinations
         </h3>
 
         <div className="region-grid">
@@ -100,7 +133,7 @@ export default function TripCreate({ user }) {
               className="region-card"
               onClick={() => selectCity(c)}
             >
-              <img src={`/cities/${c.image}`} />
+              <img src={`/cities/${c.image}`} alt={c.name} />
               <p>{c.name}</p>
             </div>
           ))}

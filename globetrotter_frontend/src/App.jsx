@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -12,10 +12,6 @@ import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import "./styles/base.css";
-import "./styles/components.css";
-import "./styles/auth.css";
-import "./styles/dashboard.css";
 import TripCreate from "./pages/TripCreate";
 import Itinerary from "./pages/Itinerary";
 import Trips from "./pages/Trips";
@@ -23,36 +19,56 @@ import Search from "./pages/Search";
 import Community from "./pages/Community";
 import Calendar from "./pages/Calendar";
 
-
-
+import "./styles/base.css";
+import "./styles/components.css";
+import "./styles/auth.css";
+import "./styles/dashboard.css";
 
 export default function App() {
   const [user, setUser] = useState(null);
 
+  // Restore user after refresh
+  useEffect(() => {
+    const saved = localStorage.getItem("user");
+    if (saved) {
+      setUser(JSON.parse(saved));
+    }
+  }, []);
+
+  const PrivateRoute = ({ children }) => {
+    if (!user) return <Navigate to="/login" />;
+    return children;
+  };
+
   return (
     <Routes>
+
+      {/* Public */}
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login setUser={setUser} />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot" element={<ForgotPassword />} />
       <Route path="/reset/:token" element={<ResetPassword />} />
 
-      <Route path="/dashboard" element={<Dashboard user={user} />} />
-      <Route path="/trip/:tripId" element={<TripPlanner />} />
-      <Route path="/timeline/:tripId" element={<Timeline />} />
-      <Route path="/budget/:tripId" element={<Budget />} />
-      <Route path="/share/:tripId" element={<Share />} />
-      <Route path="/search" element={<Search />} />
-      <Route path="/profile" element={<Profile user={user} />} />
-      <Route path="/community" element={<Community user={user} />} />
-      <Route path="/calendar" element={<Calendar user={user} />} />
+      {/* Protected (login required) */}
+      <Route path="/dashboard" element={<PrivateRoute><Dashboard user={user} /></PrivateRoute>} />
+      <Route path="/profile" element={<PrivateRoute><Profile user={user} /></PrivateRoute>} />
+      <Route path="/calendar" element={<PrivateRoute><Calendar user={user} /></PrivateRoute>} />
+      <Route path="/community" element={<PrivateRoute><Community user={user} /></PrivateRoute>} />
+      <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} />
+      <Route path="/trips" element={<PrivateRoute><Trips user={user} /></PrivateRoute>} />
+      <Route path="/trip/new" element={<PrivateRoute><TripCreate user={user} /></PrivateRoute>} />
+      <Route path="/trip/:tripId" element={<PrivateRoute><TripPlanner /></PrivateRoute>} />
+      <Route path="/itinerary/:tripId" element={<PrivateRoute><Itinerary /></PrivateRoute>} />
+      <Route path="/timeline/:tripId" element={<PrivateRoute><Timeline /></PrivateRoute>} />
+      <Route path="/budget/:tripId" element={<PrivateRoute><Budget /></PrivateRoute>} />
+      <Route path="/share/:tripId" element={<PrivateRoute><Share /></PrivateRoute>} />
+
+      {/* Admin (hackathon mode: login only) */}
       <Route path="/admin" element={<Admin user={user} />} />
 
-      <Route path="/trip/new" element={<TripCreate user={user} />} />
-      <Route path="/trips" element={<Trips user={user} />} />
-       <Route path="/itinerary/:tripId" element={<Itinerary />} /> 
-      <Route path="/trip/:tripId/itinerary" element={<Itinerary user={user} />} />
-      <Route path="/admin" element={<Admin />} />
+
+
     </Routes>
   );
 }

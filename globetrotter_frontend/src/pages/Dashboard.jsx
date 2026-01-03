@@ -6,6 +6,7 @@ import Header from "../components/Header";
 
 export default function Dashboard({ user }) {
   const [trips, setTrips] = useState([]);
+  const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,55 +24,87 @@ export default function Dashboard({ user }) {
     return city ? `/cities/${city.image}` : `/cities/paris.jpg`;
   };
 
+  const filteredTrips = trips.filter(t =>
+    t.name.toLowerCase().includes(query.toLowerCase()) ||
+    t.city.toLowerCase().includes(query.toLowerCase())
+  );
+
   return (
     <>
       <Header user={user} />
 
       <div className="dashboard-container">
 
-        <h2>Welcome, {user?.name}</h2>
-
-  <button
-    className="btn-primary"
-    style={{ width: "200px", marginTop: "10px" }}
-    onClick={() => navigate("/calendar")}
-  >
-    📅 View Calendar
-  </button>
-
-        <div className="search-bar">
-          <input placeholder="Search your trips..." />
-          <button className="filter-btn">Group</button>
-          <button className="filter-btn">Filter</button>
-          <button className="filter-btn">Sort</button>
+        {/* HERO */}
+        <div className="banner">
+          Welcome back, {user?.name} 👋
         </div>
 
-        <div className="section-title">Top Regional Selections</div>
+        <div style={{ display: "flex", gap: "12px", marginBottom: "25px" }}>
+          <button className="btn-primary" onClick={() => navigate("/calendar")}>
+            📅 Calendar
+          </button>
+          <button className="btn-primary" onClick={() => navigate("/trip/new")}>
+            ✈️ New Trip
+          </button>
+          <button className="btn-dark" onClick={() => navigate("/trips")}>
+            My Trips
+          </button>
+        </div>
+
+        {/* SEARCH */}
+        <div className="search-bar">
+          <input
+            placeholder="Search your trips..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+
+        {/* REGIONS */}
+        <h3 className="section-title">🌍 Popular Destinations</h3>
         <div className="region-grid">
           {cities.slice(0, 5).map(c => (
-            <div key={c.name} className="region-card">
+            <div
+              key={c.name}
+              className="region-card"
+              onClick={() => navigate("/search")}
+            >
               <img src={`/cities/${c.image}`} alt={c.name} />
+              <p>{c.name}</p>
             </div>
           ))}
         </div>
 
-        <div className="section-title">Previous Trips</div>
-        <div className="trip-grid">
-          {trips.map(t => (
-            <div key={t.id} className="trip-card">
-              <img src={getImage(t.city)} alt={t.name} />
-              <h3>{t.name}</h3>
-              <button className="btn-dark" onClick={() => navigate(`/trip/${t.id}`)}>
-                View Trip
-              </button>
-            </div>
-          ))}
-        </div>
-        <button onClick={() => navigate("/trips")}>
-  My Trips
-</button>
+        {/* TRIPS */}
+        <h3 className="section-title">🧳 Your Trips</h3>
 
+        {filteredTrips.length === 0 ? (
+          <div className="app-card" style={{ textAlign: "center" }}>
+            <p>No trips found.</p>
+            <button className="btn-primary" onClick={() => navigate("/trip/new")}>
+              Create your first trip
+            </button>
+          </div>
+        ) : (
+          <div className="trip-grid">
+            {filteredTrips.map(t => (
+              <div key={t.id} className="trip-card">
+                <img src={getImage(t.city)} alt={t.name} />
+                <h3>{t.name}</h3>
+                <button
+                  className="btn-dark"
+                  onClick={() => navigate(`/trip/${t.id}`)}
+                >
+                  Open Trip
+                </button>
+                
+              </div>
+            ))}
+          </div>
+        )}
 
+        {/* FAB */}
         <button className="fab" onClick={() => navigate("/trip/new")}>
           +
         </button>
@@ -80,3 +113,4 @@ export default function Dashboard({ user }) {
     </>
   );
 }
+

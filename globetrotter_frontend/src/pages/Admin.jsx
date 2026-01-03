@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import Header from "../components/Header";
+import "../styles/admin.css";
 
 export default function Admin({ user }) {
   const [tab, setTab] = useState("users");
@@ -24,43 +25,81 @@ export default function Admin({ user }) {
 
         {/* TOP BAR */}
         <div className="admin-tabs">
-          <button onClick={() => setTab("users")}>Manage Users</button>
-          <button onClick={() => setTab("cities")}>Popular Cities</button>
-          <button onClick={() => setTab("activities")}>Popular Activities</button>
-          <button onClick={() => setTab("trends")}>User Trends</button>
+          <button className={tab==="users"?"active":""} onClick={() => setTab("users")}>Manage Users</button>
+          {/* <button className={tab==="cities"?"active":""} onClick={() => setTab("cities")}>Popular Cities</button>
+          <button className={tab==="activities"?"active":""} onClick={() => setTab("activities")}>Popular Activities</button> */}
+          <button className={tab==="trends"?"active":""} onClick={() => setTab("trends")}>User Trends</button>
         </div>
 
         <div className="admin-layout">
 
-          {/* LEFT LIST */}
+          {/* LEFT PANEL */}
           <div className="admin-left">
             {tab === "users" && users.map(u => (
               <div key={u.id} className="admin-item">
-                {u.name}<span>{u.email}</span>
+                {u.name}
+                <span>{u.email}</span>
               </div>
             ))}
 
             {tab === "cities" && cities.map(c => (
               <div key={c.city} className="admin-item">
-                {c.city} <span>{c.count} trips</span>
+                {c.city}
+                <span>{c.count} trips</span>
               </div>
             ))}
 
             {tab === "activities" && activities.map(a => (
               <div key={a.name} className="admin-item">
-                {a.name} <span>{a.count}</span>
+                {a.name}
+                <span>{a.count}</span>
               </div>
             ))}
+
+            {tab === "trends" && (
+              <>
+                <div className="admin-item">Active Users <span>{stats.users}</span></div>
+                <div className="admin-item">Total Trips <span>{stats.trips}</span></div>
+                <div className="admin-item">Activities Logged <span>{stats.activities}</span></div>
+              </>
+            )}
           </div>
 
-          {/* CENTER CHARTS */}
+          {/* CENTER PANEL */}
           <div className="admin-center">
-            <div className="chart pie">Users vs Trips</div>
-            <div className="chart line">Activity Growth</div>
-            <div className="chart bar">Top Cities</div>
+
+            {tab === "users" && (
+              <>
+                <div className="chart pie">Total Users: {stats.users}</div>
+                <div className="chart bar">Total Trips: {stats.trips}</div>
+              </>
+            )}
+
+            {tab === "cities" && (
+              <>
+                <div className="chart bar">Top City: {cities[0]?.city}</div>
+                <div className="chart pie">Cities Tracked: {cities.length}</div>
+              </>
+            )}
+
+            {tab === "activities" && (
+              <>
+                <div className="chart pie">Top Activity: {activities[0]?.name}</div>
+                <div className="chart bar">Total Activities: {activities.length}</div>
+              </>
+            )}
+
+            {tab === "trends" && (
+              <>
+                <div className="chart pie">Users: {stats.users}</div>
+                <div className="chart line">Trips: {stats.trips}</div>
+                <div className="chart bar">Activities: {stats.activities}</div>
+              </>
+            )}
+
           </div>
 
-          {/* RIGHT INFO PANEL */}
+          {/* RIGHT PANEL */}
           <div className="admin-right">
             <h3>Platform Stats</h3>
             <p>Total Users: {stats.users}</p>
@@ -68,8 +107,8 @@ export default function Admin({ user }) {
             <p>Total Activities: {stats.activities}</p>
 
             <p className="note">
-              This panel helps admins understand user behavior, most visited cities and
-              platform growth.
+              This dashboard shows real-time platform analytics, most popular destinations
+              and user engagement across GlobeTrotter.
             </p>
           </div>
 

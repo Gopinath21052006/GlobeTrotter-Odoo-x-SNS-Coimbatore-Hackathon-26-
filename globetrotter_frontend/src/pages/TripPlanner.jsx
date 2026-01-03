@@ -12,6 +12,7 @@ export default function TripPlanner() {
   const [selectedStop, setSelectedStop] = useState("");
   const [activity, setActivity] = useState("");
   const [cost, setCost] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     loadStops();
@@ -23,7 +24,10 @@ export default function TripPlanner() {
   };
 
   const addCity = async () => {
-    if (!city) return alert("Enter a city");
+    if (!city) {
+      setMessage("Please enter a city name.");
+      return;
+    }
 
     await api.post("/stops", null, {
       params: {
@@ -36,11 +40,14 @@ export default function TripPlanner() {
 
     await loadStops();
     setCity("");
+    setMessage("City added to your trip!");
   };
 
   const addActivity = async () => {
-    if (!selectedStop || !activity || !cost)
-      return alert("Fill all activity fields");
+    if (!selectedStop || !activity || !cost) {
+      setMessage("Please select a city and fill activity & cost.");
+      return;
+    }
 
     await api.post("/activities", null, {
       params: {
@@ -51,9 +58,9 @@ export default function TripPlanner() {
       }
     });
 
-    alert("Activity added");
     setActivity("");
     setCost("");
+    setMessage("Activity added successfully!");
   };
 
   return (
@@ -61,14 +68,22 @@ export default function TripPlanner() {
       <Header />
 
       <div className="page-container">
-        <h2 className="page-title">Trip Planner</h2>
+        <h2 className="page-title">Plan Your Trip</h2>
+
+        <div className="trip-progress">
+          🧭 Trip → 📍 Cities → 🎯 Activities → 📅 Itinerary → 💰 Budget
+        </div>
+
+        {message && (
+          <div style={{ marginBottom: "15px", color: "green" }}>{message}</div>
+        )}
 
         {/* Add City */}
         <div className="app-card">
-          <h3>Add City</h3>
+          <h3>1️⃣ Add a City</h3>
           <input
             className="input-box"
-            placeholder="Enter city name"
+            placeholder="Enter city name (ex: Paris)"
             value={city}
             onChange={e => setCity(e.target.value)}
           />
@@ -77,18 +92,16 @@ export default function TripPlanner() {
           </button>
         </div>
 
-        <br />
-
         {/* Add Activity */}
         <div className="app-card">
-          <h3>Add Activity</h3>
+          <h3>2️⃣ Add an Activity</h3>
 
           <select
             className="input-box"
             value={selectedStop}
             onChange={e => setSelectedStop(e.target.value)}
           >
-            <option value="">Select City</option>
+            <option value="">Select a City</option>
             {stops.map(s => (
               <option key={s.id} value={s.id}>
                 {s.city}
@@ -98,14 +111,14 @@ export default function TripPlanner() {
 
           <input
             className="input-box"
-            placeholder="Activity name"
+            placeholder="Activity name (ex: Eiffel Tower)"
             value={activity}
             onChange={e => setActivity(e.target.value)}
           />
 
           <input
             className="input-box"
-            placeholder="Cost"
+            placeholder="Cost (₹)"
             type="number"
             value={cost}
             onChange={e => setCost(e.target.value)}
@@ -116,33 +129,29 @@ export default function TripPlanner() {
           </button>
         </div>
 
-        <br />
-
         {/* City List */}
         <div className="app-card">
-          <h3>Trip Cities</h3>
-          {stops.map(s => (
-            <div key={s.id}>
-              📍 {s.city}
-            </div>
-          ))}
+          <h3>📍 Your Cities</h3>
+          {stops.length === 0 ? (
+            <p style={{ color: "#777" }}>No cities added yet.</p>
+          ) : (
+            stops.map(s => (
+              <div key={s.id}>• {s.city}</div>
+            ))
+          )}
         </div>
 
-        <br />
-
         {/* Navigation */}
-        <button onClick={() => navigate(`/itinerary/${tripId}`)}>
-  View Itinerary
-</button>
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
+          <button className="btn-primary" onClick={() => navigate(`/itinerary/${tripId}`)}>
+            View Itinerary
+          </button>
           <button className="btn-primary" onClick={() => navigate(`/timeline/${tripId}`)}>
             Timeline
           </button>
-
           <button className="btn-primary" onClick={() => navigate(`/budget/${tripId}`)}>
             Budget
           </button>
-
           <button className="btn-primary" onClick={() => navigate(`/share/${tripId}`)}>
             Share
           </button>
