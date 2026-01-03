@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
+import { useParams, useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
-export default function TripPlanner({ tripId, setPage }) {
+export default function TripPlanner() {
+  const { tripId } = useParams();
+  const navigate = useNavigate();
+
   const [city, setCity] = useState("");
   const [stops, setStops] = useState([]);
   const [selectedStop, setSelectedStop] = useState("");
@@ -9,10 +14,17 @@ export default function TripPlanner({ tripId, setPage }) {
   const [cost, setCost] = useState("");
 
   useEffect(() => {
-    api.get(`/stops/${tripId}`).then(res => setStops(res.data));
-  }, []);
+    loadStops();
+  }, [tripId]);
+
+  const loadStops = async () => {
+    const res = await api.get(`/stops/${tripId}`);
+    setStops(res.data);
+  };
 
   const addCity = async () => {
+    if (!city) return alert("Enter a city");
+
     await api.post("/stops", null, {
       params: {
         trip_id: tripId,
@@ -21,10 +33,15 @@ export default function TripPlanner({ tripId, setPage }) {
         end_date: "2025-01-02"
       }
     });
-    window.location.reload();
+
+    await loadStops();
+    setCity("");
   };
 
   const addActivity = async () => {
+    if (!selectedStop || !activity || !cost)
+      return alert("Fill all activity fields");
+
     await api.post("/activities", null, {
       params: {
         stop_id: selectedStop,
@@ -33,30 +50,101 @@ export default function TripPlanner({ tripId, setPage }) {
         date: "2025-01-01"
       }
     });
+
     alert("Activity added");
+    setActivity("");
+    setCost("");
   };
 
   return (
-    <div>
-      <h2>Trip Planner</h2>
+    <>
+      <Header />
 
-      <input placeholder="City" onChange={e => setCity(e.target.value)} />
-      <button onClick={addCity}>Add City</button>
+      <div className="page-container">
+        <h2 className="page-title">Trip Planner</h2>
 
-      <select onChange={e => setSelectedStop(e.target.value)}>
-        <option>Select City</option>
-        {stops.map(s => (
-          <option key={s.id} value={s.id}>{s.city}</option>
-        ))}
-      </select>
+        {/* Add City */}
+        <div className="app-card">
+          <h3>Add City</h3>
+          <input
+            className="input-box"
+            placeholder="Enter city name"
+            value={city}
+            onChange={e => setCity(e.target.value)}
+          />
+          <button className="btn-primary" onClick={addCity}>
+            Add City
+          </button>
+        </div>
 
-      <input placeholder="Activity" onChange={e => setActivity(e.target.value)} />
-      <input placeholder="Cost" onChange={e => setCost(e.target.value)} />
-      <button onClick={addActivity}>Add Activity</button>
+        <br />
 
-      <button onClick={() => setPage("timeline")}>View Timeline</button>
-      <button onClick={() => setPage("budget")}>View Budget</button>
-      <button onClick={() => setPage("share")}>Share Trip</button>
-    </div>
+        {/* Add Activity */}
+        <div className="app-card">
+          <h3>Add Activity</h3>
+
+          <select
+            className="input-box"
+            value={selectedStop}
+            onChange={e => setSelectedStop(e.target.value)}
+          >
+            <option value="">Select City</option>
+            {stops.map(s => (
+              <option key={s.id} value={s.id}>
+                {s.city}
+              </option>
+            ))}
+          </select>
+
+          <input
+            className="input-box"
+            placeholder="Activity name"
+            value={activity}
+            onChange={e => setActivity(e.target.value)}
+          />
+
+          <input
+            className="input-box"
+            placeholder="Cost"
+            type="number"
+            value={cost}
+            onChange={e => setCost(e.target.value)}
+          />
+
+          <button className="btn-primary" onClick={addActivity}>
+            Add Activity
+          </button>
+        </div>
+
+        <br />
+
+        {/* City List */}
+        <div className="app-card">
+          <h3>Trip Cities</h3>
+          {stops.map(s => (
+            <div key={s.id}>
+              📍 {s.city}
+            </div>
+          ))}
+        </div>
+
+        <br />
+
+        {/* Navigation */}
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button className="btn-primary" onClick={() => navigate(`/timeline/${tripId}`)}>
+            Timeline
+          </button>
+
+          <button className="btn-primary" onClick={() => navigate(`/budget/${tripId}`)}>
+            Budget
+          </button>
+
+          <button className="btn-primary" onClick={() => navigate(`/share/${tripId}`)}>
+            Share
+          </button>
+        </div>
+      </div>
+    </>
   );
 }

@@ -1,0 +1,51 @@
+.app-card {
+  background: white;
+  border-radius: 22px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  padding: 40px;
+}
+
+.input-box {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+.input-box:focus {
+  border-color: black;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  border: none;
+  background: black;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.center-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.link {
+  font-weight: 600;
+  cursor: pointer;
+}

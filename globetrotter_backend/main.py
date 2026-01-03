@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import SessionLocal, engine
 import models
 import uuid
+from datetime import date
 from auth import hash_password, verify_password
 
 models.Base.metadata.create_all(bind=engine)
@@ -28,18 +29,34 @@ def get_db():
         db.close()
 
 @app.post("/signup")
-def signup(name: str, email: str, password: str, db: Session = Depends(get_db)):
+def signup(
+    email: str,
+    password: str,
+    first_name: str,
+    last_name: str,
+    phone: str,
+    city: str,
+    country: str,
+    bio: str,
+    db: Session = Depends(get_db)
+):
     if db.query(models.User).filter(models.User.email == email).first():
         raise HTTPException(status_code=400, detail="Email already exists")
 
     user = models.User(
-        name=name,
         email=email,
-        password=hash_password(password)
+        password=hash_password(password),
+        name=f"{first_name} {last_name}",
+        first_name=first_name,
+        last_name=last_name,
+        phone=phone,
+        city=city,
+        country=country,
+        bio=bio
     )
     db.add(user)
     db.commit()
-    return {"message": "User created"}
+    return {"message": "Account created"}
 
 @app.post("/login")
 def login(email: str, password: str, db: Session = Depends(get_db)):
@@ -51,16 +68,18 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
     return {"user_id": user.id, "name": user.name}
 
 @app.post("/trips")
-def create_trip(user_id: int, name: str, start_date: str, end_date: str, db: Session = Depends(get_db)):
+def create_trip(user_id: int, name: str, city: str, start_date: str, end_date: str, db: Session = Depends(get_db)):
     trip = models.Trip(
         user_id=user_id,
         name=name,
+        city=city,
         start_date=start_date,
         end_date=end_date
     )
     db.add(trip)
     db.commit()
-    return {"message": "Trip created"}
+    db.refresh(trip)
+    return trip
 
 @app.get("/trips/{user_id}")
 def get_trips(user_id: int, db: Session = Depends(get_db)):
@@ -207,3 +226,87 @@ def reset_password(token: str, new_password: str, db: Session = Depends(get_db))
     user.reset_token = None
     db.commit()
     return {"message": "Password updated"}
+
+@app.get("/itinerary/{trip_id}")
+def get_itinerary(trip_id: int, db: Session = Depends(get_db)):
+    stops = db.query(models.Stop).filter(models.Stop.trip_id == trip_id).all()
+
+    data = []
+
+    for stop in stops:
+        activities = db.query(models.Activity).filter(
+            models.Activity.stop_id == stop.id
+        ).all()
+
+        total = sum(a.cost for a in activities)
+
+        data.append({
+            "id": stop.id,
+            "city": stop.city,
+            "start_date": stop.start_date,
+            "end_date": stop.end_date,
+            "budget": total
+        })
+
+    return data
+
+@app.get("/profile/{user_id}")
+def get_profile(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        return {}
+
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "city": user.city,
+        "country": user.country,
+        "bio": user.bio
+    }
+
+
+@app.get("/user-trips/{user_id}")
+def user_trips(user_id: int, db: Session = Depends(get_db)):
+    today = date.today()
+
+    upcoming = db.query(models.Trip).filter(
+        models.Trip.user_id == user_id,
+        models.Trip.start_date >= today
+    ).all()
+
+    previous = db.query(models.Trip).filter(
+        models.Trip.user_id == user_id,
+        models.Trip.start_date < today
+    ).all()
+
+    return {
+        "upcoming": upcoming,
+        "previous": previous
+    }
+
+@app.get("/trip-list/{user_id}")
+def trip_list(user_id: int, db: Session = Depends(get_db)):
+    today = date.today()
+
+    ongoing = db.query(models.Trip).filter(
+        models.Trip.user_id == user_id,
+        models.Trip.start_date <= today,
+        models.Trip.end_date >= today
+    ).all()
+
+    upcoming = db.query(models.Trip).filter(
+        models.Trip.user_id == user_id,
+        models.Trip.start_date > today
+    ).all()
+
+    completed = db.query(models.Trip).filter(
+        models.Trip.user_id == user_id,
+        models.Trip.end_date < today
+    ).all()
+
+    return {
+        "ongoing": ongoing,
+        "upcoming": upcoming,
+        "completed": completed
+    }

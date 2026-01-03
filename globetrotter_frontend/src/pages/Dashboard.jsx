@@ -1,51 +1,80 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "../api";
+import { cities } from "../data/cities";
+import Header from "../components/Header";
 
-export default function Dashboard({ user, setTripId, setPage }) {
+export default function Dashboard({ user }) {
   const [trips, setTrips] = useState([]);
-  const [name, setName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://127.0.0.1:8000/trips/${user.user_id}`)
-      .then(res => setTrips(res.data));
-  }, []);
-
-  const createTrip = async () => {
-  await axios.post("http://127.0.0.1:8000/trips", null, {
-    params: {
-      user_id: user.user_id,
-      name,
-      start_date: "2025-01-01",
-      end_date: "2025-01-05"
+    if (!user) {
+      navigate("/login");
+      return;
     }
-  });
+    api.get(`/trips/${user.user_id}`).then(res => setTrips(res.data));
+  }, [user]);
 
-  // Fetch updated trips instead of reloading page
-  const res = await axios.get(`http://127.0.0.1:8000/trips/${user.user_id}`);
-  setTrips(res.data);
-};
-
+  const getImage = (cityName) => {
+    const city = cities.find(c =>
+      cityName?.toLowerCase().includes(c.name.toLowerCase())
+    );
+    return city ? `/cities/${city.image}` : `/cities/paris.jpg`;
+  };
 
   return (
-    <div>
-      <h2>Your Trips</h2>
-      <input placeholder="Trip name" onChange={e => setName(e.target.value)} />
-      <button onClick={createTrip}>Create Trip</button>
+    <>
+      <Header user={user} />
 
-      {trips.map(t => (
-        <div key={t.id}>
-          {t.name}
-          <button onClick={() => { setTripId(t.id); setPage("planner"); }}>
-            Open
-          </button>
-          <button onClick={() => { setTripId(t.id); setPage("admin"); }}>
-            Admin
-          </button>
-          <button onClick={() => { setTripId(t.id); setPage("profile"); }}>
-            Profile
-          </button>
+      <div className="dashboard-container">
+
+        <div className="dashboard-header">
+          <h2>Welcome, {user?.name}</h2>
         </div>
-      ))}
-    </div>
+
+        <div className="banner">
+          Your next adventure starts here ✈️
+        </div>
+
+        <div className="search-bar">
+          <input placeholder="Search your trips..." />
+          <button className="filter-btn">Group</button>
+          <button className="filter-btn">Filter</button>
+          <button className="filter-btn">Sort</button>
+        </div>
+
+        <div className="section-title">Top Regional Selections</div>
+        <div className="region-grid">
+          {cities.slice(0, 5).map(c => (
+            <div key={c.name} className="region-card">
+              <img src={`/cities/${c.image}`} alt={c.name} />
+            </div>
+          ))}
+        </div>
+
+        <div className="section-title">Previous Trips</div>
+        <div className="trip-grid">
+          {trips.map(t => (
+            <div key={t.id} className="trip-card">
+              <img src={getImage(t.city)} alt={t.name} />
+              <h3>{t.name}</h3>
+              <button className="btn-dark" onClick={() => navigate(`/trip/${t.id}`)}>
+                View Trip
+              </button>
+            </div>
+          ))}
+        </div>
+        <button onClick={() => navigate("/trips")}>
+  My Trips
+</button>
+
+
+        <button className="fab" onClick={() => navigate("/trip/new")}>
+          +
+        </button>
+
+      </div>
+    </>
   );
 }

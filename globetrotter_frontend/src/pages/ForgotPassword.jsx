@@ -1,29 +1,48 @@
 import { useState } from "react";
 import { api } from "../api";
+import { useNavigate } from "react-router-dom";
 
-export default function ForgotPassword({ setPage }) {
+export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [link, setLink] = useState("");
+  const [resetLink, setResetLink] = useState("");
+  const navigate = useNavigate();
 
   const send = async () => {
-    const res = await api.post("/forgot-password", null, { params: { email } });
-    setLink(res.data.reset_link);
+    try {
+      const res = await api.post("/forgot-password", null, {
+        params: { email }
+      });
+      setResetLink(res.data.reset_link);
+    } catch {
+      alert("Error sending reset link");
+    }
   };
 
   return (
-    <div>
+    <div className="login-container">
+      <div className="avatar">🔑</div>
       <h2>Forgot Password</h2>
-      <input placeholder="Email" onChange={e => setEmail(e.target.value)} />
-      <button onClick={send}>Send Reset Link</button>
 
-      {link && (
-        <div>
-          <p>Reset Link (Hackathon Mode):</p>
-          <a href={link}>{link}</a>
+      <input
+        className="input-box"
+        placeholder="Enter your email"
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <button className="login-btn" onClick={send}>
+        Send Reset Link
+      </button>
+
+      {resetLink && (
+        <div style={{ marginTop: "15px" }}>
+          <p>Reset Link (Hackathon Mode)</p>
+          <a href={resetLink}>{resetLink}</a>
         </div>
       )}
 
-      <button onClick={() => setPage("login")}>Back</button>
+      <div className="forgot" onClick={() => navigate("/login")}>
+        Back to Login
+      </div>
     </div>
   );
 }

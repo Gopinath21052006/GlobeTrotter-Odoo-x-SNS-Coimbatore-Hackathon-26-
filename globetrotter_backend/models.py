@@ -3,18 +3,28 @@ from database import Base
 
 class User(Base):
     __tablename__ = "users"
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     email = Column(String, unique=True)
     password = Column(String)
+    first_name = Column(String)
+    last_name = Column(String)
+    phone = Column(String)
+    city = Column(String)
+    country = Column(String)
+    bio = Column(String)
+
 
 class Trip(Base):
     __tablename__ = "trips"
-    id = Column(Integer, primary_key=True, index=True)
+
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     name = Column(String)
-    start_date = Column(Date)
-    end_date = Column(Date)
+    city = Column(String)
+    start_date = Column(String)
+    end_date = Column(String)
 
 class Stop(Base):
     __tablename__ = "stops"
