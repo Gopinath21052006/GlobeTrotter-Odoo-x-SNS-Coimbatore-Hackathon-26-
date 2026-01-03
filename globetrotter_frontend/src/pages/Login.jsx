@@ -29,6 +29,9 @@ export default function Login({ setUser, setPage }) {
       <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
       <button onClick={login}>Login</button>
       <button onClick={() => setPage("signup")}>Create Account</button>
+      <p onClick={() => setPage("forgot")} style={{cursor:"pointer", color:"blue"}}>
+  Forgot Password?
+</p>
 
     </div>
   );
