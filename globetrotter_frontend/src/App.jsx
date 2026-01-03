@@ -16,10 +16,13 @@ import "./styles/base.css";
 import "./styles/components.css";
 import "./styles/auth.css";
 import "./styles/dashboard.css";
-import "./styles/forms.css";
 import TripCreate from "./pages/TripCreate";
 import Itinerary from "./pages/Itinerary";
 import Trips from "./pages/Trips";
+import Search from "./pages/Search";
+import Community from "./pages/Community";
+import Calendar from "./pages/Calendar";
+
 
 
 
@@ -39,9 +42,15 @@ export default function App() {
       <Route path="/timeline/:tripId" element={<Timeline />} />
       <Route path="/budget/:tripId" element={<Budget />} />
       <Route path="/share/:tripId" element={<Share />} />
+      <Route path="/search" element={<Search />} />
       <Route path="/profile" element={<Profile user={user} />} />
+      <Route path="/community" element={<Community user={user} />} />
+      <Route path="/calendar" element={<Calendar user={user} />} />
+      <Route path="/admin" element={<Admin user={user} />} />
+
       <Route path="/trip/new" element={<TripCreate user={user} />} />
       <Route path="/trips" element={<Trips user={user} />} />
+       <Route path="/itinerary/:tripId" element={<Itinerary />} /> 
       <Route path="/trip/:tripId/itinerary" element={<Itinerary user={user} />} />
       <Route path="/admin" element={<Admin />} />
     </Routes>

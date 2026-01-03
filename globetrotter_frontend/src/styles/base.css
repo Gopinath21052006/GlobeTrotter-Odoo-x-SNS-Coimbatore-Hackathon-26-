@@ -3,8 +3,31 @@
   font-family: "Inter", "Segoe UI", sans-serif;
 }
 
+:root {
+  --brand-dark: #000000;
+  --brand-light: #ffffff;
+
+  --bg-gradient: linear-gradient(135deg, #dff3ff, #e6fff3, #ffe6f0);
+  --surface: #ffffff;
+  --surface-soft: rgba(255,255,255,0.65);
+
+  --shadow-sm: 0 6px 16px rgba(0,0,0,0.08);
+  --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --text-dark: #111;
+  --text-soft: #555;
+  --border-soft: #ddd;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(135deg, #dff3ff, #e6fff3, #ffe6f0);
+  background: var(--bg-gradient);
+  color: var(--text-dark);
 }

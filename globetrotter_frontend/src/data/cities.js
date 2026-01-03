@@ -1,12 +1,20 @@
 export const cities = [
-  { name: "Paris", image: "paris.jpg" },
-  { name: "Goa", image: "goa.jpg" },
-  { name: "Manali", image: "manali.jpg" },
-  { name: "Jaipur", image: "jaipur.jpg" },
-  { name: "Mysore", image: "mysore.jpg" },
-  { name: "Ooty", image: "ooty.jpg" },
-  { name: "Tokyo", image: "tokyo.jpg" },
-  { name: "Rome", image: "rome.jpg" },
-  { name: "Dubai", image: "dubai.jpg" },
-  { name: "Bali", image: "bali.jpg" }
+  {
+    name: "Paris",
+    country: "France",
+    image: "paris.jpg",
+    activities: ["museum", "cruise", "sightseeing"]
+  },
+  {
+    name: "Manali",
+    country: "India",
+    image: "manali.jpg",
+    activities: ["paragliding", "trekking", "snow"]
+  },
+  {
+    name: "Goa",
+    country: "India",
+    image: "goa.jpg",
+    activities: ["beach", "scuba", "nightlife"]
+  }
 ];

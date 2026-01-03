@@ -41,3 +41,15 @@ class Activity(Base):
     name = Column(String)
     cost = Column(Float)
     date = Column(Date)
+
+
+class CommunityPost(Base):
+    __tablename__ = "community_posts"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    username = Column(String)
+    content = Column(String)
+    city = Column(String)
+    created_at = Column(Date)
+

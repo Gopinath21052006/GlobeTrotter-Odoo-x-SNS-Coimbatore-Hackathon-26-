@@ -228,27 +228,32 @@ def reset_password(token: str, new_password: str, db: Session = Depends(get_db))
     return {"message": "Password updated"}
 
 @app.get("/itinerary/{trip_id}")
-def get_itinerary(trip_id: int, db: Session = Depends(get_db)):
+def itinerary(trip_id: int, db: Session = Depends(get_db)):
+    result = {}
+
     stops = db.query(models.Stop).filter(models.Stop.trip_id == trip_id).all()
 
-    data = []
-
     for stop in stops:
-        activities = db.query(models.Activity).filter(
-            models.Activity.stop_id == stop.id
-        ).all()
+        acts = db.query(models.Activity).filter(models.Activity.stop_id == stop.id).all()
+        for a in acts:
+            day = a.date
+            if day not in result:
+                result[day] = []
+            result[day].append({
+                "activity": a.name,
+                "cost": a.cost,
+                "city": stop.city
+            })
 
-        total = sum(a.cost for a in activities)
+    # calculate totals
+    totals = {}
+    for day in result:
+        totals[day] = sum(a["cost"] for a in result[day])
 
-        data.append({
-            "id": stop.id,
-            "city": stop.city,
-            "start_date": stop.start_date,
-            "end_date": stop.end_date,
-            "budget": total
-        })
-
-    return data
+    return {
+        "days": result,
+        "totals": totals
+    }
 
 @app.get("/profile/{user_id}")
 def get_profile(user_id: int, db: Session = Depends(get_db)):
@@ -310,3 +315,70 @@ def trip_list(user_id: int, db: Session = Depends(get_db)):
         "upcoming": upcoming,
         "completed": completed
     }
+
+@app.get("/community")
+def get_posts(db: Session = Depends(get_db)):
+    return db.query(models.CommunityPost).order_by(models.CommunityPost.created_at.desc()).all()
+
+
+@app.post("/community")
+def create_post(user_id: int, username: str, content: str, city: str, db: Session = Depends(get_db)):
+    post = models.CommunityPost(
+        user_id=user_id,
+        username=username,
+        content=content,
+        city=city
+    )
+    db.add(post)
+    db.commit()
+    return {"message": "Post created"}
+
+@app.get("/calendar/{user_id}")
+def calendar(user_id: int, db: Session = Depends(get_db)):
+    trips = db.query(models.Trip).filter(models.Trip.user_id == user_id).all()
+    return trips
+
+
+
+# ---------------- ADMIN ----------------
+
+@app.get("/admin/users")
+def get_users(db: Session = Depends(get_db)):
+    return db.query(models.User).all()
+
+
+@app.get("/admin/stats")
+def admin_stats(db: Session = Depends(get_db)):
+    users = db.query(models.User).count()
+    trips = db.query(models.Trip).count()
+    activities = db.query(models.Activity).count()
+
+    return {
+        "users": users,
+        "trips": trips,
+        "activities": activities
+    }
+
+
+@app.get("/admin/popular-cities")
+def popular_cities(db: Session = Depends(get_db)):
+    result = db.execute("""
+      SELECT city, COUNT(*) as count
+      FROM stops
+      GROUP BY city
+      ORDER BY count DESC
+      LIMIT 5
+    """)
+    return result.fetchall()
+
+
+@app.get("/admin/popular-activities")
+def popular_activities(db: Session = Depends(get_db)):
+    result = db.execute("""
+      SELECT name, COUNT(*) as count
+      FROM activities
+      GROUP BY name
+      ORDER BY count DESC
+      LIMIT 5
+    """)
+    return result.fetchall()

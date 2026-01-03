@@ -29,13 +29,15 @@ export default function Dashboard({ user }) {
 
       <div className="dashboard-container">
 
-        <div className="dashboard-header">
-          <h2>Welcome, {user?.name}</h2>
-        </div>
+        <h2>Welcome, {user?.name}</h2>
 
-        <div className="banner">
-          Your next adventure starts here ✈️
-        </div>
+  <button
+    className="btn-primary"
+    style={{ width: "200px", marginTop: "10px" }}
+    onClick={() => navigate("/calendar")}
+  >
+    📅 View Calendar
+  </button>
 
         <div className="search-bar">
           <input placeholder="Search your trips..." />

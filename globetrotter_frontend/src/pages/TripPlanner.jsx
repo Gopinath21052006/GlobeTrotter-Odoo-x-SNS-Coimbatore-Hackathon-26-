@@ -131,6 +131,9 @@ export default function TripPlanner() {
         <br />
 
         {/* Navigation */}
+        <button onClick={() => navigate(`/itinerary/${tripId}`)}>
+  View Itinerary
+</button>
         <div style={{ display: "flex", gap: "10px" }}>
           <button className="btn-primary" onClick={() => navigate(`/timeline/${tripId}`)}>
             Timeline

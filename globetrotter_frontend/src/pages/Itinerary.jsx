@@ -1,65 +1,41 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { api } from "../api";
+import { useParams } from "react-router-dom";
 import Header from "../components/Header";
 
-export default function Itinerary({ user }) {
+export default function Itinerary() {
   const { tripId } = useParams();
-  const [sections, setSections] = useState([]);
+  const [data, setData] = useState({ days: {}, totals: {} });
 
   useEffect(() => {
-    api.get(`/itinerary/${tripId}`).then(res => {
-      setSections(res.data);
-    });
-  }, [tripId]);
-
-  const addSection = async () => {
-    const city = prompt("Enter city");
-    if (!city) return;
-
-    await api.post("/stops", null, {
-      params: {
-        trip_id: tripId,
-        city,
-        start_date: "2025-01-01",
-        end_date: "2025-01-02"
-      }
-    });
-
-    const res = await api.get(`/itinerary/${tripId}`);
-    setSections(res.data);
-  };
+    api.get(`/itinerary/${tripId}`).then(res => setData(res.data));
+  }, []);
 
   return (
     <>
-      <Header user={user} />
+      <Header />
 
       <div className="page-container">
-        <h2 className="page-title">Build Itinerary</h2>
+        <h2 className="page-title">Trip Itinerary</h2>
 
-        {sections.map((s, index) => (
-          <div key={s.id} className="itinerary-section">
-            <h3>Section {index + 1}: {s.city}</h3>
+        {Object.keys(data.days).map((day, i) => (
+          <div key={day} className="day-card">
 
-            <p>
-              Travel, stay and activities planned for {s.city}
-            </p>
+            <h3>Day {i + 1} — {day}</h3>
 
-            <div className="section-row">
-              <div className="date-box">
-                Date Range: {s.start_date} → {s.end_date}
+            {data.days[day].map((a, idx) => (
+              <div key={idx} className="activity-row">
+                <span>{a.activity} ({a.city})</span>
+                <span>₹{a.cost}</span>
               </div>
+            ))}
 
-              <div className="budget-box">
-                Budget: ₹{s.budget}
-              </div>
+            <div className="day-total">
+              Total: ₹{data.totals[day]}
             </div>
+
           </div>
         ))}
-
-        <button className="btn-primary" onClick={addSection}>
-          + Add another Section
-        </button>
       </div>
     </>
   );
